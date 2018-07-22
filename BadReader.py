@@ -12,6 +12,32 @@ from smartcard.CardRequest import CardRequest
 from smartcard.util import toHexString 
 from smartcard.Exceptions import CardRequestTimeoutException
 from time import sleep
+import BRcommands as cmds
+
+def enterPrompt(cardService):
+	requestedExit = False
+	requestedDisconnect = False
+	cardATR = cardService.connection.getATR() # to be protected by try..except clause if cardService not connected
+	
+	while not requestedExit:
+
+		cmdIn = input(cardATR + " >>> ") # or any other prompt-like thing
+		cmdList = cmdIn.split()
+
+		if cmdList[0] == "disconnect":
+			requestedDisconnect = True
+			requestedExit = True # Required to exit the prompt for reconnection as is
+			cmds.disconnect(cardService)
+		elif cmdList[0] == "exit":
+			if not requestedDisconnect:
+				print("Disconnecting card before exiting") # Yellow ?
+				cmds.disconnect(cardService)
+			print("Exiting")
+			requestedExit = True
+		elif cmdList[0] == "getATR":
+			cmds.getATR(cardService)
+		else: # default to help()
+			cmds.help()
 
 def attemptConnection(cardRequest):
 
