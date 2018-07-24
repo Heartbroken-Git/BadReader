@@ -5,39 +5,44 @@
 # Author : Heartbroken-Dev
 # License : Apache License 2.0
 # Dependencies : pcscd pcsc-tools libpcsclite1 libpcsclite-dev pyscard
-# Version : Proof of concept
+# Version : PoC 2
 
 from smartcard.CardType import AnyCardType
 from smartcard.CardRequest import CardRequest
 from smartcard.util import toHexString
 from smartcard.Exceptions import CardRequestTimeoutException
+import BRutils as utils
+import BRcommands as cmds
 
 def enterPrompt(cardService):
 	requestedExit = False
 	requestedDisconnect = False
-	cardATR = cardService.connection.getATR() # to be protected by try..except clause if cardService not connected
+	cardReader = cardService.connection.getReader() # TODO : to be protected by try..except clause if cardService not connected
 
 	while not requestedExit:
 
-		cmdIn = input(cardATR + " >>> ") # or any other prompt-like thing
+		cmdIn = input(cardReader + " >>> ") # or any other prompt-like thing
 		cmdList = cmdIn.split()
 
 		if cmdList[0] == "disconnect":
 			requestedDisconnect = True
 			requestedExit = True # Required to exit the prompt for reconnection as is
-			cmds.disconnect(cardService)
+			cmds.Disconnect.execute(cardService, cmdList)
 		elif cmdList[0] == "exit":
 			if not requestedDisconnect:
-				print("Disconnecting card before exiting") # Yellow ?
-				cmds.disconnect(cardService)
+				print("Disconnecting card before exiting") # TODO : Yellow ?
+				cmds.Disconnect.execute(cardService, cmdList)
 			print("Exiting")
 			requestedExit = True
 		elif cmdList[0] == "getATR":
-			cmds.getATR(cardService)
+			cmds.GetATR.execute(cardService, cmdList)
 		else: # default to help()
-			cmds.help()
+			cmds.Help.execute(cardService, cmdList) # TODO : add specific message when there's a typo ?
 
-	return utils.const.STATUS_PROMPT_EXITING
+	if requestedDisconnect:
+		return utils.const.STATUS_PROMPT_DISCONNECTED
+	else:
+		return utils.const.STATUS_PROMPT_EXITING
 
 def attemptConnection(cardRequest):
 
@@ -81,12 +86,6 @@ def main():
 
 		if promptStatus == utils.const.STATUS_PROMPT_EXITING:
 			break
-
-	# automatic disconnecting for PoC test
-	# print("Now disconnecting in 5 s")
-	# sleep(5)
-	# mainCardService.connection.disconnect()
-	# print("Card disconnected, can now be safely removed")
 
 if __name__ == '__main__':
 	main()
