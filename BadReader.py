@@ -11,7 +11,8 @@ from smartcard.CardType import AnyCardType
 from smartcard.CardRequest import CardRequest
 from smartcard.util import toHexString 
 from smartcard.Exceptions import CardRequestTimeoutException
-from time import sleep
+from BRutils import const
+# from time import sleep
 
 def attemptConnection(cardRequest):
 
@@ -19,7 +20,7 @@ def attemptConnection(cardRequest):
 	
 	print("Waiting for card insertion", flush=True, end='')
 	
-	while(stillWaiting):
+	while stillWaiting:
 		try:
 			stillWaiting = False
 			print(".", flush=True, end='')
@@ -37,6 +38,9 @@ def attemptConnection(cardRequest):
 	
 	return cardService	
 
+def enterPrompt(cardService):
+	# TODO
+
 def main():
 	
 	mainCardType = AnyCardType()
@@ -46,14 +50,21 @@ def main():
 	print("Bad Reader, PoC")
 	print("By Heartbroken-Dev, licensed under Apache-2.0")
 
-	# Attempt to connect to a card
-	mainCardService = attemptConnection(mainCardRequest)
+	while True: # Pseudo do: .. while()
+	
+		# Attempt to connect to a card
+		mainCardService = attemptConnection(mainCardRequest)
+		
+		promptStatus = enterPrompt(mainCardService)
+		
+		if promptStatus == STATUS_PROMPT_EXITING:
+			break
 
 	# automatic disconnecting for PoC test
-	print("Now disconnecting in 5 s")
-	sleep(5)
-	mainCardService.connection.disconnect()
-	print("Card disconnected, can now be safely removed")
+	# print("Now disconnecting in 5 s")
+	# sleep(5)
+	# mainCardService.connection.disconnect()
+	# print("Card disconnected, can now be safely removed")
 	
 if __name__ == '__main__':
 	main()
