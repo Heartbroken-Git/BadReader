@@ -1,11 +1,26 @@
 #!/usr/bin/python3
 
-# Set of utility functions, variables or constants used by Bad Reader
-# Author : Heartbroken-Dev
-# License : Apache License 2.0
-# Version : PoC 2
+# Copyright 2018 Heartbroken-Git
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-# Pseudo constants
+## @file BRutils.py
+#  @author Heartbroken-Git
+#  @copyright Apache License 2.0
+#  @brief Set of utility functions, variables or constants used by Bad Reader
+#  @version PoC 2
+
+## @brief Class containing pesudo constants
 class const:
 
 	# Statuses for the prompt
