@@ -25,13 +25,14 @@ from smartcard.util import toHexString
 
 # While I wrap my head around Abstract classes for Python let's assume all classes are "well-made"
 
-## @brief Class defining the command to disconnect a card from a reader
+
+## @brief Class defining the command to disconnect a card from a reader
 #  @details Contains both a description for the help command and the actual command in the form of the implemented execute() function
 class Disconnect:
 
     helpDesc = "disconnect : disconnects the current card, giving the user five (5) seconds to remove the currently plugged in card before reattempting connection."
 
-    ## @brief Public implementation of the execute() method to disconnect a card from its reader
+    ## @brief Public implementation of the execute() method to disconnect a card from its reader
     #  @param cardService a CardService object containing the card's connection to be disconnected
     #  @param cmdList a list of the actual commands typed by the user, currently unused
     #  @todo Add some way to check if the disconnection worked and to protect against disconnecting an unconnected CardService object
@@ -60,7 +61,7 @@ class Help:
 
     helpDesc = "help : displays this help message."
 
-    ## @brief Public implementation of the execute() method to display the help messages of all the commands recognized by BadReader
+    ## @brief Public implementation of the execute() method to display the help messages of all the commands recognized by BadReader
     #  @details Prints each command's help description in alphabetical order
     #  @param cardService unused parameter
     #  @param cmdList unused parameter
