@@ -36,6 +36,5 @@ class apdu:
 	READ_PROTECTION_BITS = [0xFF,0xB2,0x00,0x00,0x04]
 	WRITE_MEMORY_CARD = [0xFF,0xD0,0x00] # + byte address of first byte to write + length of data to write (in bytes ?) + every byte to write
 	WRITE_PROTECTION_MEMORY_CARD = [0xFF,0xD1,0x00] # + byte address of first byte to write (from 0x00 to 0x1F) + length of data to write (in bytes ?) + every byte to write
-	PRESENT_CODE_MEMORY_CARD = [0xFF,0x20,0x00,0x00,0x03] + # + each of the three bytes of the PIN
+	PRESENT_CODE_MEMORY_CARD = [0xFF,0x20,0x00,0x00,0x03] # + each of the three bytes of the PIN
 	CHANGE_CODE_MEMORY_CARD = [0xFF,0xD2,0x00,0x01,0x03] # + each of the three bytes of the new PIN
-	

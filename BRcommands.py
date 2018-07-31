@@ -21,7 +21,8 @@
 #  @version PoC 2
 
 from time import sleep
-from smartcard.util import toHexString
+import BRutils as utils
+from smartcard.util import toHexString, toBytes, toASCIIString
 
 # While I wrap my head around Abstract classes for Python let's assume all classes are "well-made"
 
@@ -65,11 +66,13 @@ class Help:
     #  @details Prints each command's help description in alphabetical order
     #  @param cardService unused parameter
     #  @param cmdList unused parameter
+    #  @todo Make display a specific help message for read and write
     def execute(cardService, cmdList):
         print('\t' + Disconnect.helpDesc)
         print('\t' + Exit.helpDesc)
-        print('\t' + Help.helpDesc)
         print('\t' + GetATR.helpDesc)
+        print('\t' + Help.helpDesc)
+        print('\t' + Read.helpDesc)
 
 ## @brief Class defining the command to display the current card's ATR
 #  @details Contains a description for the help command and an implementation of the execute() method to display the card's Answer To Reset
@@ -83,3 +86,47 @@ class GetATR:
     #  @todo Ensure that the cardService object actually has a connection or protect against cases where it doesn't
     def execute(cardService, cmdList):
         print(toHexString(cardService.connection.getATR())) # TODO : Check that there actually is a connection in the CardService object
+
+## @brief Class defining the command to display the current card's content
+#  @details Contains a description for the help command and an implementation of the execute() method to display the card's content
+#  @todo Improve the help description look
+#  @todo Write a specific detailed help display function to be used by "help read"
+class Read:
+
+    helpDesc = "read : read the current card's content, see \"help read\" for details" # TODO : emphasize in some way the "help read" command
+
+    ## @brief Public implementation of the execute() method to read a card's content
+    #  @details Parses the command entered by the user in the prompt to check if it should translate to ASCII or not and to retrieve the first address to read and the length
+    #  @note If no length is given then will read the card until its end
+    #  @param cardService a CardService object with a connection to the card to read
+    #  @param cmdList the list of commands entered by the user
+    def execute(cardService, cmdList):
+
+        if cmdList[1] == "--ascii":
+            startAddrHex = int(hex(int(cmdList[2])),16)
+
+            if len(cmdList) == 4: # check if length set or should read all
+                readLenHex = int(hex(int(cmdList[3])),16)
+            else:
+                readLenHex = int(hex(256 - int(cmdList[2])),16)
+
+            displayAscii = True
+
+        else:
+            startAddrHex = int(hex(int(cmdList[1])),16)
+
+            if len(cmdList) == 3: # check if length set or should read all
+                readLenHex = int(hex(int(cmdList[2])),16)
+            else:
+                readLenHex = int(hex(256 - int(cmdList[1])),16)
+
+            displayAscii = False
+
+        apdu = utils.apdu.READ_MEMORY_CARD + [startAddrHex] + [readLenHex]
+        response, sw1, sw2 = cardService.connection.transmit(apdu)
+
+        if displayAscii:
+            print(toASCIIString(response))
+        else:
+            print(toHexString(response))
+        print("SW : " + hex(sw1) + " " + hex(sw2))

@@ -58,6 +58,8 @@ def enterPrompt(cardService):
 			requestedExit = True
 		elif cmdList[0] == "getATR":
 			cmds.GetATR.execute(cardService, cmdList)
+		elif cmdList[0] == "read":
+			cmds.Read.execute(cardService, cmdList)
 		else: # default to help()
 			cmds.Help.execute(cardService, cmdList) # TODO : add specific message when there's a typo ?
 
