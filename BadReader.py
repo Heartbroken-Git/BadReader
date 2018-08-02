@@ -58,8 +58,11 @@ def enterPrompt(cardService):
 			requestedExit = True
 		elif cmdList[0] == "getATR":
 			cmds.GetATR.execute(cardService, cmdList)
-		else: # default to help()
-			cmds.Help.execute(cardService, cmdList) # TODO : add specific message when there's a typo ?
+		elif cmdList[0] == "help":
+			cmds.Help.execute(cardService, cmdList)
+		else:
+			print("ERROR : The command " + cmdList[0] + " has not been recognized by Bad Reader !")
+			cmds.Help.execute(cardService, cmdList)
 
 	if requestedDisconnect:
 		return utils.const.STATUS_PROMPT_DISCONNECTED
