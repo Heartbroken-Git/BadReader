@@ -50,16 +50,23 @@ def enterPrompt(cardService):
 			requestedDisconnect = True
 			requestedExit = True # Required to exit the prompt for reconnection as is
 			cmds.Disconnect.execute(cardService, cmdList)
+
 		elif cmdList[0] == "exit":
 			if not requestedDisconnect:
 				print("Disconnecting card before exiting") # TODO : Yellow ?
 				cmds.Disconnect.execute(cardService, cmdList)
 			print("Exiting")
 			requestedExit = True
+
 		elif cmdList[0] == "getATR":
 			cmds.GetATR.execute(cardService, cmdList)
+
 		elif cmdList[0] == "read":
 			cmds.Read.execute(cardService, cmdList)
+
+		elif cmdList[0] == "verify":
+			cmds.Verify.execute(cardService, cmdList)
+			
 		else: # default to help()
 			cmds.Help.execute(cardService, cmdList) # TODO : add specific message when there's a typo ?
 

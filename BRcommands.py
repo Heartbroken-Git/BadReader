@@ -73,6 +73,7 @@ class Help:
         print('\t' + GetATR.helpDesc)
         print('\t' + Help.helpDesc)
         print('\t' + Read.helpDesc)
+        print('\t' + Verify.helpDesc)
 
 ## @brief Class defining the command to display the current card's ATR
 #  @details Contains a description for the help command and an implementation of the execute() method to display the card's Answer To Reset
@@ -130,3 +131,49 @@ class Read:
         else:
             print(toHexString(response))
         print("SW : " + hex(sw1) + " " + hex(sw2))
+
+## @brief Class defining the command to verify a given PIN against the card's
+#  @details Contains a description for the help command and an implementation of the execute() method to try to verify the PIN
+#  @todo Write an extended help display function to explain the parameters
+class Verify:
+
+    helpDesc = "verify : checks a given PIN against the one securing the card, if they match the card becomes writable, see \"help verify\" for details"
+
+    ## @brief Public implementation of the execute() method to try and verify a PIN against the one used by the card
+    #  @details Parses the command sent by the user to check if it should use the default PIN, otherwise reads the three ASCII character PIN and translates it to hex before having it checked by the card
+    #  @note Assumes the PIN is in one "word" and that it is ASCII to be translated into hex
+    #  @param cardService a CardService object with a connection to a PIN protected card
+    #  @param cmdList the list of the commands entered by the user in the prompt
+    #  @todo Color the error messages
+    def execute(cardService, cmdList):
+
+        if cmdList[1] == "--default":
+            pinToCheck = [0xFF,0xFF,0xFF]
+
+        else:
+
+            if len(cmdList[1]) != 3:
+                print("ERROR : PIN must be exactly 3 characters long !") # TODO : put in red
+                return
+            else:
+                pinToCheck = []
+                for i in range(3):
+                    pinToCheck.append(int(hex(ord(cmdList[1][0])),16))
+
+        apdu = utils.apdu.PRESENT_CODE_MEMORY_CARD + pinToCheck
+        response, sw1, sw2 = cardService.connection.transmit(apdu)
+
+        print("DEBUG :")
+        print(apdu)
+        print(response)
+        print(sw1)
+        print(sw2)
+
+        if sw1 == 0x90 and sw2 == 0x07:
+            print("SUCCESS : The card is not write protected anymore !") # TODO : put in green
+        elif sw1 == 0x90 and sw2 == 0x00:
+            print("ERROR : The card has been permanently blocked (too many failed attempts)") # TODO : put in red
+        elif sw1 == 0x90:
+            print("ERROR : Incorrect PIN !") # TODO : put in red
+        else:
+            print("ERROR : Unknown error on verification !") # TODO : put in red
